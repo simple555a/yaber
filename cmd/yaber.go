@@ -29,6 +29,10 @@ func main() {
 			Usage: "File prefix for generated files",
 			Value: "asset_",
 		},
+		cli.StringFlag{
+			Name:  "strip",
+			Usage: "File path prefix to strip away",
+		},
 	}
 	app.Action = generateFiles
 	app.Run(os.Args)
@@ -38,10 +42,11 @@ func generateFiles(c *cli.Context) {
 	path := c.GlobalString("path")
 	pkgName := c.GlobalString("pkg")
 	prefix := c.GlobalString("prefix")
+	strip := c.GlobalString("strip")
 
 	dev, e := yaber.MakeDevAsset(pkgName)
 	checkError(e)
-	build, e := yaber.MakeBuildAsset(pkgName, path)
+	build, e := yaber.MakeBuildAsset(pkgName, path, strip)
 	checkError(e)
 
 	dp := fmt.Sprintf("%sdev.go", prefix)

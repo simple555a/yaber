@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 	"text/template"
 )
 
@@ -22,8 +23,8 @@ func MakeDevAsset(pkgName string) ([]byte, error) {
 // Make a build template for loading embedded files, when running with the build
 // tag "embed".
 // Output is the same as MakeDevAsset: go code in []byte format.
-func MakeBuildAsset(pkgName, path string) ([]byte, error) {
-	files, e := embedAssets(path)
+func MakeBuildAsset(pkgName, path string, stripPath string) ([]byte, error) {
+	files, e := embedAssets(path, stripPath)
 	if e != nil {
 		return nil, e
 	}
@@ -46,7 +47,7 @@ func runTemplate(tmpl string, data map[string]interface{}) []byte {
 
 // Recursively reads all regular files in path, into memory as gzipped data.
 // Returns a map where the keys are file paths and the values are the gzip byte data.
-func embedAssets(path string) (map[string][]byte, error) {
+func embedAssets(path string, stripPath string) (map[string][]byte, error) {
 	list := make(map[string][]byte)
 	dirs := []string{path}
 
@@ -60,6 +61,7 @@ func embedAssets(path string) (map[string][]byte, error) {
 
 		for _, f := range files {
 			fpath := filepath.Join(d, f.Name())
+			tmpPath := strings.TrimPrefix(fpath, stripPath)
 
 			if f.IsDir() {
 				dirs = append(dirs, fpath)
@@ -86,7 +88,7 @@ func embedAssets(path string) (map[string][]byte, error) {
 				return nil, e
 			}
 
-			list[fpath] = buf.Bytes()
+			list[tmpPath] = buf.Bytes()
 		}
 	}
 
