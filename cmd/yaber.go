@@ -14,14 +14,9 @@ import (
 func main() {
 	app := cli.NewApp()
 	app.Version = yaber.VERSION
-	app.HideHelp = true // hides the help command, eww
 	app.Usage = "Generate go code with embedded binary data from asset files"
 	app.ArgsUsage = "/path/to/assets/dir/"
 	app.Flags = []cli.Flag{
-		cli.BoolFlag{ // Have to add it here so it will show up in global options
-			Name:  "help",
-			Usage: "show help",
-		},
 		cli.StringFlag{
 			Name:  "pkg",
 			Usage: "package name to use in generated files",
