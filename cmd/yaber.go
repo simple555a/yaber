@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/codegangsta/cli"
 	"github.com/lmas/yaber"
@@ -14,24 +15,21 @@ func main() {
 	app := cli.NewApp()
 	app.Version = yaber.VERSION
 	app.Usage = "Generate go code with embedded binary data from asset files"
+	app.ArgsUsage = "/path/to/assets/dir/"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
-			Name:  "path",
-			Usage: "Path to asset directory for generating files from (REQUIRED)",
-		},
-		cli.StringFlag{
 			Name:  "pkg",
-			Usage: "Package name to use in generated files",
+			Usage: "package name to use in generated files",
 			Value: "assets",
 		},
 		cli.StringFlag{
 			Name:  "prefix",
-			Usage: "File prefix for generated files",
+			Usage: "file prefix for generated files",
 			Value: "asset_",
 		},
 		cli.StringFlag{
 			Name:  "strip",
-			Usage: "File path prefix to strip away",
+			Usage: "file path prefix to strip away",
 		},
 	}
 	app.Action = generateFiles
@@ -39,7 +37,12 @@ func main() {
 }
 
 func generateFiles(c *cli.Context) {
-	path := c.GlobalString("path")
+	path := strings.TrimSpace(c.Args().First())
+	if len(path) < 1 {
+		fmt.Println("Error: No file path specified.")
+		os.Exit(1)
+	}
+
 	pkgName := c.GlobalString("pkg")
 	prefix := c.GlobalString("prefix")
 	strip := c.GlobalString("strip")
