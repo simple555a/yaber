@@ -13,6 +13,7 @@ import (
 func MakeDevAsset(pkgName string) ([]byte, error) {
 	data := map[string]interface{}{
 		"pkgName": pkgName,
+		"ver":     VERSION,
 	}
 	tmpl := runTemplate(tmplDevAsset, data)
 	return tmpl, nil
@@ -29,6 +30,7 @@ func MakeBuildAsset(pkgName, path string) ([]byte, error) {
 	data := map[string]interface{}{
 		"pkgName":  pkgName,
 		"fileData": files,
+		"ver":      VERSION,
 	}
 	tmpl := runTemplate(tmplBuildAsset, data)
 	return tmpl, nil

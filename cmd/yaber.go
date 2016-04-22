@@ -10,11 +10,9 @@ import (
 	"github.com/lmas/yaber"
 )
 
-const VERSION = "0.1"
-
 func main() {
 	app := cli.NewApp()
-	app.Version = VERSION
+	app.Version = yaber.VERSION
 	app.Usage = "Generate go code with embedded binary data from asset files"
 	app.Flags = []cli.Flag{
 		cli.StringFlag{
