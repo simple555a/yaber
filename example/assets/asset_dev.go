@@ -15,19 +15,34 @@ func Asset(path string) ([]byte, error) {
 }
 
 func AssetDir(dir string) (map[string][]byte, error) {
-        tmp, e := ioutil.ReadDir(dir)
-        if e != nil {
-                return nil, e
-        }
+        list := make(map[string][]byte)
+        dirs := []string{dir}
 
-        files := make(map[string][]byte)
-        for _, f := range tmp {
-                name := filepath.Join(dir, f.Name())
-                body, e := ioutil.ReadFile(name)
+        for len(dirs) > 0 {
+                d := dirs[0]
+                dirs = dirs[1:]
+                files, e := ioutil.ReadDir(d)
                 if e != nil {
                         return nil, e
                 }
-                files[name] = body
+
+                for _, f := range files {
+                        fpath := filepath.Join(d, f.Name())
+
+                        if f.IsDir() {
+                                dirs = append(dirs, fpath)
+                                continue
+                        }
+                        if !f.Mode().IsRegular() {
+                                continue
+                        }
+
+                        fbody, e := ioutil.ReadFile(fpath)
+                        if e != nil {
+                                return nil, e
+                        }
+                        list[fpath] = fbody
+                }
         }
-        return files, nil
+        return list, nil
 }
