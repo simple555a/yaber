@@ -3,6 +3,7 @@ package yaber
 import (
 	"bytes"
 	"compress/gzip"
+	"go/format"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -16,7 +17,10 @@ func MakeDevAsset(pkgName string) ([]byte, error) {
 		"pkgName": pkgName,
 		"ver":     VERSION,
 	}
-	tmpl := runTemplate(tmplDevAsset, data)
+	tmpl, e := runTemplate(tmplDevAsset, data)
+	if e != nil {
+		return nil, e
+	}
 	return tmpl, nil
 }
 
@@ -33,17 +37,21 @@ func MakeBuildAsset(pkgName, path string, stripPath string) ([]byte, error) {
 		"fileData": files,
 		"ver":      VERSION,
 	}
-	tmpl := runTemplate(tmplBuildAsset, data)
+	tmpl, e := runTemplate(tmplBuildAsset, data)
+	if e != nil {
+		return nil, e
+	}
+
 	return tmpl, nil
 }
 
 // Compile the tmpl string, executes it using data and returns the result.
-func runTemplate(tmpl string, data map[string]interface{}) []byte {
+func runTemplate(tmpl string, data map[string]interface{}) ([]byte, error) {
 	t := template.Must(template.New("body").Parse(tmpl))
 	template.Must(t.New("head").Parse(tmplHead))
 	buf := new(bytes.Buffer)
 	t.Execute(buf, data)
-	return buf.Bytes()
+	return format.Source(buf.Bytes())
 }
 
 // Recursively reads all regular files in path, into memory as gzipped data.
