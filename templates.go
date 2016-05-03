@@ -13,7 +13,7 @@ import (
 )
 
 func Asset(path string) ([]byte, error) {
-	return ioutil.ReadFile(path)
+        return ioutil.ReadFile(path)
 }
 
 func AssetDir(dir string) (map[string][]byte, error) {
