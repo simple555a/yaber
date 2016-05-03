@@ -39,7 +39,8 @@ func MakeBuildAsset(pkgName, path string, stripPath string) ([]byte, error) {
 
 // Compile the tmpl string, executes it using data and returns the result.
 func runTemplate(tmpl string, data map[string]interface{}) []byte {
-	t := template.Must(template.New("").Parse(tmpl))
+	t := template.Must(template.New("body").Parse(tmpl))
+	template.Must(t.New("head").Parse(tmplHead))
 	buf := new(bytes.Buffer)
 	t.Execute(buf, data)
 	return buf.Bytes()
