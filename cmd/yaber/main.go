@@ -22,7 +22,7 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	gen, e := yaber.NewGenerator(flag.Arg(1), "", *prefix, *strip)
+	gen, e := yaber.NewGenerator(flag.Arg(0), "", *prefix, *strip)
 	checkError(e)
 
 	files, e := gen.GenerateAssets()
