@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go/build"
 	"io/ioutil"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -13,6 +14,9 @@ import (
 )
 
 func main() {
+	log.SetFlags(0)
+	log.SetPrefix("yaber: ")
+
 	app := cli.NewApp()
 	app.Version = yaber.VERSION
 	app.Usage = "Generate go code with embedded binary data from asset files"
@@ -72,8 +76,7 @@ func generateFiles(c *cli.Context) {
 
 func checkError(e error) {
 	if e != nil {
-		fmt.Println(e)
-		os.Exit(1)
+		log.Fatal(e)
 	}
 }
 
