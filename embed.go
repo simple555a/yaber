@@ -3,8 +3,10 @@ package yaber
 import (
 	"bytes"
 	"compress/gzip"
+	"fmt"
 	"go/format"
 	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
@@ -16,6 +18,7 @@ func MakeDevAsset(pkgName string) ([]byte, error) {
 	data := map[string]interface{}{
 		"pkgName": pkgName,
 		"ver":     VERSION,
+		"command": usedCommand(),
 	}
 	tmpl, e := runTemplate(tmplDevAsset, data)
 	if e != nil {
@@ -36,6 +39,7 @@ func MakeBuildAsset(pkgName, path string, stripPath string) ([]byte, error) {
 		"pkgName":  pkgName,
 		"fileData": files,
 		"ver":      VERSION,
+		"command":  usedCommand(),
 	}
 	tmpl, e := runTemplate(tmplBuildAsset, data)
 	if e != nil {
@@ -43,6 +47,10 @@ func MakeBuildAsset(pkgName, path string, stripPath string) ([]byte, error) {
 	}
 
 	return tmpl, nil
+}
+
+func usedCommand() string {
+	return fmt.Sprintf("yaber %s", strings.Join(os.Args[1:], " "))
 }
 
 // Compile the tmpl string, executes it using data and returns the result.
