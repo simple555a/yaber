@@ -2,5 +2,4 @@
 
 # Example script for generating the asset files, inside the assets/ dir.
 
-cd ./assets/
-go run ../../cmd/yaber/main.go --strip "../" ../templates/
+go run ../cmd/yaber/main.go -prefix="assets/" templates/
