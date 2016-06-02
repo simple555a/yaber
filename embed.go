@@ -3,54 +3,91 @@ package yaber
 import (
 	"bytes"
 	"compress/gzip"
+	"errors"
 	"fmt"
 	"go/format"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 )
 
-// Make a dev template for loading files from disk and returns it as go code
-// in []byte format.
-func MakeDevAsset(pkgName string) ([]byte, error) {
-	data := map[string]interface{}{
-		"pkgName": pkgName,
-		"ver":     VERSION,
-		"command": usedCommand(),
-	}
-	tmpl, e := runTemplate(tmplDevAsset, data)
-	if e != nil {
-		return nil, e
-	}
-	return tmpl, nil
+var ErrNoPath = errors.New("no file path to assets")
+
+type AssetFile struct {
+	Path string
+	Body []byte
 }
 
-// Make a build template for loading embedded files, when running with the build
-// tag "embed".
-// Output is the same as MakeDevAsset: go code in []byte format.
-func MakeBuildAsset(pkgName, path string, stripPath string) ([]byte, error) {
-	files, e := embedAssets(path, stripPath)
-	if e != nil {
-		return nil, e
-	}
-	data := map[string]interface{}{
-		"pkgName":  pkgName,
-		"fileData": files,
-		"ver":      VERSION,
-		"command":  usedCommand(),
-	}
-	tmpl, e := runTemplate(tmplBuildAsset, data)
-	if e != nil {
-		return nil, e
-	}
-
-	return tmpl, nil
+type Generator struct {
+	FilePath     string
+	Package      string
+	OutputPrefix string
+	StripPath    string
 }
 
-func usedCommand() string {
-	return fmt.Sprintf("yaber %s", strings.Join(os.Args[1:], " "))
+func NewGenerator(path, pkg, prefix, strip string) (*Generator, error) {
+	if len(path) < 1 {
+		return nil, ErrNoPath
+	}
+
+	if len(prefix) < 1 {
+		prefix = "asset_"
+	}
+
+	if len(pkg) < 1 {
+		var e error
+		// Default to use the prefix (or the current) dir as the pkg name
+		pkg, e = getPackageName(filepath.Dir(prefix))
+		if e != nil {
+			return nil, e
+		}
+	}
+
+	// TODO: support multiple file paths/dirs
+	g := &Generator{
+		FilePath:     path,
+		Package:      pkg,
+		OutputPrefix: prefix,
+		StripPath:    strip,
+	}
+	return g, nil
+}
+
+func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
+	files, e := embedAssets(g.FilePath, g.StripPath)
+	if e != nil {
+		return nil, e
+	}
+
+	data := map[string]interface{}{
+		"version": VERSION,
+		"package": g.Package,
+		"command": executedCommand(),
+		"files":   files,
+	}
+
+	// Generate the *dev.go file with no assets.
+	devBody, e := runTemplate(tmplDevAsset, data)
+	if e != nil {
+		return nil, e
+	}
+	dev := &AssetFile{
+		Path: fmt.Sprintf("%sdev.go", g.OutputPrefix),
+		Body: devBody,
+	}
+
+	// Generate the *build.go file with embedded assets.
+	buildBody, e := runTemplate(tmplBuildAsset, data)
+	if e != nil {
+		return nil, e
+	}
+	build := &AssetFile{
+		Path: fmt.Sprintf("%sbuild.go", g.OutputPrefix),
+		Body: buildBody,
+	}
+
+	return []*AssetFile{dev, build}, nil
 }
 
 // Compile the tmpl string, executes it using data and returns the result.
@@ -108,6 +145,5 @@ func embedAssets(path string, stripPath string) (map[string][]byte, error) {
 			list[tmpPath] = buf.Bytes()
 		}
 	}
-
 	return list, nil
 }
