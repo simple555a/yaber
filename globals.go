@@ -1,3 +1,3 @@
 package yaber
 
-const VERSION = "0.2"
+const VERSION = "0.3"
