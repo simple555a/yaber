@@ -23,17 +23,17 @@ func expectPkgName(t *testing.T, expected, path string) error {
 }
 
 func TestPackageNameNotGo(t *testing.T) {
-	e := expectPkgName(t, "files", "./test/files")
+	e := expectPkgName(t, "templates", "./example/templates")
 	failOnError(t, e)
 }
 
 func TestPackageNameIsGo(t *testing.T) {
-	e := expectPkgName(t, "main", "./test/pkg")
+	e := expectPkgName(t, "main", "./example")
 	failOnError(t, e)
 }
 
 func TestPackageNameBadPath(t *testing.T) {
-	e := expectPkgName(t, "", "./test/notadir")
+	e := expectPkgName(t, "", "./example/notadir")
 	if _, ok := e.(*os.PathError); !ok {
 		t.Errorf("Expected os.PathError, got: %#v\n", e)
 	}
