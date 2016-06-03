@@ -68,7 +68,7 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 	}
 
 	// Generate the *dev.go file with no assets.
-	devBody, e := runTemplate(tmplDevAsset, data)
+	devBody, e := runTemplate(tmplDev, data)
 	if e != nil {
 		return nil, e
 	}
@@ -78,10 +78,11 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 	}
 
 	// Generate the *build.go file with embedded assets.
-	buildBody, e := runTemplate(tmplBuildAsset, data)
+	buildBody, e := runTemplate(tmplBuild, data)
 	if e != nil {
 		return nil, e
 	}
+
 	build := &AssetFile{
 		Path: fmt.Sprintf("%sbuild.go", g.OutputPrefix),
 		Body: buildBody,
@@ -91,11 +92,9 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 }
 
 // Compile the tmpl string, executes it using data and returns the result.
-func runTemplate(tmpl string, data map[string]interface{}) ([]byte, error) {
-	t := template.Must(template.New("body").Parse(tmpl))
-	template.Must(t.New("head").Parse(tmplHead))
+func runTemplate(tmpl *template.Template, data map[string]interface{}) ([]byte, error) {
 	buf := new(bytes.Buffer)
-	t.Execute(buf, data)
+	tmpl.Execute(buf, data)
 	return format.Source(buf.Bytes())
 }
 
