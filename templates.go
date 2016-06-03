@@ -127,11 +127,6 @@ func decompress(data []byte) ([]byte, error) {
 var _rawAssets = map[string][]byte{
 {{range $path, $body := .files}}
 	"{{$path}}": []byte({{printf "%+q" $body}}),
-{{end -}}
+{{end}}
 }
 `
-
-// The "{{end -}}
-// }
-// `" part is a bit of a hack to ensure we get a correctly gofmt'ed output file
-// and makes git shut up about "No newline at end of file".
