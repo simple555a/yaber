@@ -1,6 +1,10 @@
 yaber - Yet Another Binary Embedder
 ================================================================================
 
+[![GoDoc](https://godoc.org/github.com/lmas/yaber?status.svg)](https://godoc.org/github.com/lmas/yaber)
+[![Build Status](https://travis-ci.org/lmas/yaber.svg?branch=master)](https://travis-ci.org/lmas/yaber)
+[![Coverage Status](https://coveralls.io/repos/github/lmas/yaber/badge.svg?branch=master)](https://coveralls.io/github/lmas/yaber?branch=master)
+
 `yaber` is a yet another tool to generate go code with embedded binary data of
 your assets.
 
@@ -79,5 +83,10 @@ MIT License, see the LICENSE file.
 Todo
 --------------------------------------------------------------------------------
 
-- Prove that the code is non-buggy, by writting tests (when the project is nearing
-  a mature state. Also not sur ehow to test the generated code...)
+- Update docs for new lib.
+
+- Handle multiple files/dirs?
+
+- Add tests for cmd/
+
+- Generate test code for generated assets too?
