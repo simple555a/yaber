@@ -126,6 +126,10 @@ func embedAssets(path string, stripPath string) (map[string][]byte, error) {
 			if e != nil {
 				return nil, e
 			}
+			if len(fbody) < 1 {
+				list[tmpPath] = []byte{}
+				continue
+			}
 
 			buf := new(bytes.Buffer)
 			gw := gzip.NewWriter(buf)
