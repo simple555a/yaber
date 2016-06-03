@@ -1,6 +1,10 @@
 package yaber
 
-import "text/template"
+import (
+	"bytes"
+	"go/format"
+	"text/template"
+)
 
 var (
 	tmplDev   *template.Template
@@ -15,6 +19,12 @@ func init() {
 
 	tmplBuild = template.Must(head.Clone())
 	template.Must(tmplBuild.Parse(rawBuild))
+}
+
+func runTemplate(tmpl *template.Template, data map[string]interface{}) ([]byte, error) {
+	buf := new(bytes.Buffer)
+	tmpl.Execute(buf, data)
+	return format.Source(buf.Bytes())
 }
 
 var rawHead = `{{define "head"}}

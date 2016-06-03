@@ -5,11 +5,9 @@ import (
 	"compress/gzip"
 	"errors"
 	"fmt"
-	"go/format"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
-	"text/template"
 )
 
 var ErrNoPath = errors.New("no file path to assets")
@@ -96,13 +94,6 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 	}
 
 	return []*AssetFile{dev, build}, nil
-}
-
-// Compile the tmpl string, executes it using data and returns the result.
-func runTemplate(tmpl *template.Template, data map[string]interface{}) ([]byte, error) {
-	buf := new(bytes.Buffer)
-	tmpl.Execute(buf, data)
-	return format.Source(buf.Bytes())
 }
 
 // Recursively reads all regular files in path, into memory as gzipped data.
