@@ -22,11 +22,6 @@ func expectPkgName(t *testing.T, expected, path string) error {
 	return nil
 }
 
-func TestPackageNameEmpty(t *testing.T) {
-	e := expectPkgName(t, "empty", "./test/empty")
-	failOnError(t, e)
-}
-
 func TestPackageNameNotGo(t *testing.T) {
 	e := expectPkgName(t, "files", "./test/files")
 	failOnError(t, e)

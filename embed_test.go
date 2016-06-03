@@ -13,12 +13,6 @@ func assert(t *testing.T, val, expected interface{}) {
 	}
 }
 
-func TestEmbedAssetEmptyDir(t *testing.T) {
-	files, e := embedAssets("./test/empty", "")
-	failOnError(t, e)
-	assert(t, len(files), 0)
-}
-
 func TestEmbedAssets(t *testing.T) {
 	files, e := embedAssets("./test/files", "test/")
 	failOnError(t, e)
