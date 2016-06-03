@@ -11,9 +11,10 @@ import (
 )
 
 var (
-	pkg    = flag.String("pkg", "", "package name to use for the output files")
+	pkg    = flag.String("pkg", "", "package name to use for the generated code")
 	prefix = flag.String("prefix", "asset_", "file prefix for the output files")
 	strip  = flag.String("strip", "", "file path prefix to strip away from the asset files")
+	tag    = flag.String("tag", "", "build tag to use for the generated code")
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	gen, e := yaber.NewGenerator(flag.Arg(0), *pkg, *prefix, *strip)
+	gen, e := yaber.NewGenerator(flag.Arg(0), *pkg, *prefix, *strip, *tag)
 	checkError(e)
 
 	files, e := gen.GenerateAssets()

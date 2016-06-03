@@ -25,7 +25,7 @@ var rawHead = `{{define "head"}}
 
 package {{.package}}{{end}}`
 
-var rawDev = `// +build !embed
+var rawDev = `// +build !{{.tag}}
 {{template "head" .}}
 
 import (
@@ -71,7 +71,7 @@ func AssetDir(dir string) (map[string][]byte, error) {
 }
 `
 
-var rawBuild = `// +build embed
+var rawBuild = `// +build {{.tag}}
 {{template "head" .}}
 
 import (
