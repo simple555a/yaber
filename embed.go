@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"compress/gzip"
 	"errors"
-	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -18,26 +17,26 @@ type AssetFile struct {
 }
 
 type Generator struct {
-	FilePath     string
-	Package      string
-	OutputPrefix string
-	StripPath    string
-	BuildTag     string
+	FilePath   string
+	Package    string
+	OutputFile string
+	StripPath  string
+	BuildTag   string
 }
 
-func NewGenerator(path, pkg, prefix, strip, tag string) (*Generator, error) {
+func NewGenerator(path, pkg, output, strip, tag string) (*Generator, error) {
 	if len(path) < 1 {
 		return nil, ErrNoPath
 	}
 
-	if len(prefix) < 1 {
-		prefix = "asset_"
+	if len(output) < 1 {
+		output = "assets.go"
 	}
 
 	if len(pkg) < 1 {
 		var e error
-		// Default to use the prefix (or the current) dir as the pkg name
-		pkg, e = getPackageName(filepath.Dir(prefix))
+		// Default to use the output (or the current) dir as the pkg name
+		pkg, e = getPackageName(filepath.Dir(output))
 		if e != nil {
 			return nil, e
 		}
@@ -49,11 +48,11 @@ func NewGenerator(path, pkg, prefix, strip, tag string) (*Generator, error) {
 
 	// TODO: support multiple file paths/dirs
 	g := &Generator{
-		FilePath:     path,
-		Package:      pkg,
-		OutputPrefix: prefix,
-		StripPath:    strip,
-		BuildTag:     tag,
+		FilePath:   path,
+		Package:    pkg,
+		OutputFile: output,
+		StripPath:  strip,
+		BuildTag:   tag,
 	}
 	return g, nil
 }
@@ -78,7 +77,7 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 		return nil, e
 	}
 	main := &AssetFile{
-		Path: fmt.Sprintf("%sassets.go", g.OutputPrefix),
+		Path: g.OutputFile,
 		Body: mainBody,
 	}
 
