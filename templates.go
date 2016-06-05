@@ -87,6 +87,7 @@ var rawBuild = `// +build {{.tag}}
 import (
         "bytes"
         "compress/gzip"
+        "io"
         "io/ioutil"
         "os"
         "strings"
@@ -118,6 +119,9 @@ func decompress(data []byte) ([]byte, error) {
         buf := bytes.NewBuffer(data)
         gr, e := gzip.NewReader(buf)
         if e != nil {
+        	if e == io.EOF{
+        		return []byte{}, nil
+		}
                 return nil, e
         }
         defer gr.Close()
