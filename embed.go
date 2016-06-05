@@ -21,10 +21,9 @@ type Generator struct {
 	Package    string
 	OutputFile string
 	StripPath  string
-	BuildTag   string
 }
 
-func NewGenerator(path, pkg, output, strip, tag string) (*Generator, error) {
+func NewGenerator(path, pkg, output, strip string) (*Generator, error) {
 	if len(path) < 1 {
 		return nil, ErrNoPath
 	}
@@ -42,17 +41,12 @@ func NewGenerator(path, pkg, output, strip, tag string) (*Generator, error) {
 		}
 	}
 
-	if len(tag) < 1 {
-		tag = "embed"
-	}
-
 	// TODO: support multiple file paths/dirs
 	g := &Generator{
 		FilePath:   path,
 		Package:    pkg,
 		OutputFile: output,
 		StripPath:  strip,
-		BuildTag:   tag,
 	}
 	return g, nil
 }
@@ -67,7 +61,6 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 		"version": VERSION,
 		"package": g.Package,
 		"command": executedCommand(),
-		"tag":     g.BuildTag,
 		"files":   files,
 	}
 
