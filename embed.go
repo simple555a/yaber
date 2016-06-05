@@ -73,27 +73,16 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 	}
 
 	// Generate the *dev.go file with no assets.
-	devBody, e := runTemplate(tmplDev, data)
+	mainBody, e := runTemplate(tmplMain, data)
 	if e != nil {
 		return nil, e
 	}
-	dev := &AssetFile{
-		Path: fmt.Sprintf("%sdev.go", g.OutputPrefix),
-		Body: devBody,
+	main := &AssetFile{
+		Path: fmt.Sprintf("%sassets.go", g.OutputPrefix),
+		Body: mainBody,
 	}
 
-	// Generate the *build.go file with embedded assets.
-	buildBody, e := runTemplate(tmplBuild, data)
-	if e != nil {
-		return nil, e
-	}
-
-	build := &AssetFile{
-		Path: fmt.Sprintf("%sbuild.go", g.OutputPrefix),
-		Body: buildBody,
-	}
-
-	return []*AssetFile{dev, build}, nil
+	return []*AssetFile{main}, nil
 }
 
 // Recursively reads all regular files in path, into memory as gzipped data.
