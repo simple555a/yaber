@@ -51,13 +51,9 @@ func TestGenerateAssets(t *testing.T) {
 
 	files, e := gen.GenerateAssets()
 	failOnError(t, e)
-	assert(t, len(files), 2)
-	assert(t, files[0].Path, "./example/assets/dev.go")
-	assert(t, files[1].Path, "./example/assets/build.go")
+	assert(t, len(files), 1)
+	assert(t, files[0].Path, "./example/assets/assets.go")
 	if len(files[0].Body) < 1 {
-		t.Error("Wasn't expecting an empty dev file")
-	}
-	if len(files[1].Body) < 1 {
-		t.Error("Wasn't expecting an empty build file")
+		t.Error("Wasn't expecting an empty asset file")
 	}
 }

@@ -22,23 +22,15 @@ const expectedHeader string = `//go:generate testcmd
 
 package testpkg`
 
-func TestRunTemplateDev(t *testing.T) {
-	out, e := runTemplate(tmplDev, data)
+func TestRunMainTemplate(t *testing.T) {
+	out, e := runTemplate(tmplMain, data)
 	failOnError(t, e)
 	s := string(out)
-	if !strings.HasPrefix(s, "// +build !testtag\n\n"+expectedHeader) {
-		t.Errorf("Got bad header for dev template: %s", s)
+	if !strings.HasPrefix(s, expectedHeader) {
+		t.Errorf("Got bad header for main template: %s", s)
 	}
-}
 
-func TestRunTemplateBuild(t *testing.T) {
-	out, e := runTemplate(tmplBuild, data)
-	failOnError(t, e)
-	s := string(out)
-	if !strings.HasPrefix(s, "// +build testtag\n\n"+expectedHeader) {
-		t.Errorf("Got bad header for build template: %s", s)
-	}
 	if !strings.Contains(s, "TESTFILE") && !strings.Contains(s, "TESTFILEBODY") {
-		t.Errorf("No files in build template: %s", s)
+		t.Errorf("No files in main template: %s", s)
 	}
 }
