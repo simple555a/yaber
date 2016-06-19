@@ -17,13 +17,13 @@ type AssetFile struct {
 }
 
 type Generator struct {
-	FilePath   string
+	FilePaths  []string
 	Package    string
 	OutputFile string
 	StripPath  string
 }
 
-func NewGenerator(path, pkg, output, strip string) (*Generator, error) {
+func NewGenerator(path []string, pkg, output, strip string) (*Generator, error) {
 	if len(path) < 1 {
 		return nil, ErrNoPath
 	}
@@ -43,7 +43,7 @@ func NewGenerator(path, pkg, output, strip string) (*Generator, error) {
 
 	// TODO: support multiple file paths/dirs
 	g := &Generator{
-		FilePath:   path,
+		FilePaths:  path,
 		Package:    pkg,
 		OutputFile: output,
 		StripPath:  strip,
@@ -52,9 +52,15 @@ func NewGenerator(path, pkg, output, strip string) (*Generator, error) {
 }
 
 func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
-	files, e := embedAssets(g.FilePath, g.StripPath)
-	if e != nil {
-		return nil, e
+	files := make(map[string][]byte)
+	for _, p := range g.FilePaths {
+		f, e := embedAssets(p, g.StripPath)
+		if e != nil {
+			return nil, e
+		}
+		for k, v := range f {
+			files[k] = v
+		}
 	}
 
 	data := map[string]interface{}{

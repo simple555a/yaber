@@ -23,7 +23,7 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	gen, e := yaber.NewGenerator(flag.Arg(0), *pkg, *output, *strip)
+	gen, e := yaber.NewGenerator(flag.Args(), *pkg, *output, *strip)
 	checkError(e)
 
 	files, e := gen.GenerateAssets()
@@ -41,7 +41,7 @@ Yet another binary embedder - Generate go code embedded with binary (and
 gzip'ed) data of your local assets.
 
 Usage:
-  yaber [flags] /path/to/assets/dir/
+  yaber [flags] /paths/to/assets/dirs/
 
 Flags:
 `, yaber.VERSION)
