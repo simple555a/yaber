@@ -86,6 +86,8 @@ MIT License, see the LICENSE file.
 Todo
 --------------------------------------------------------------------------------
 
+- Bug with running go generate for the example.
+
 - Need to improve the tests (more test cases and test errors).
 
 - Is there a max size for a single go source file? Perform a more extensive test,
