@@ -13,15 +13,15 @@ import (
 // provide at least a single file path to assets.
 var ErrNoPaths = errors.New("no file paths to assets")
 
-// AssetFile is the final, generated product from a Generator.
+// AssetFile is the final, generated product from a AssetGenerator.
 type AssetFile struct {
 	Path string
 	Body []byte
 }
 
-// Generator is the main object used for generating new files with embedded
+// AssetGenerator is the main object used for generating new files with embedded
 // assets and tests.
-type Generator struct {
+type AssetGenerator struct {
 	// FilePaths is the list of asset directories/files to embed.
 	FilePaths []string
 
@@ -39,8 +39,10 @@ type Generator struct {
 	PublicFuncs bool
 }
 
-// NewGenerator constructs a new Generator object.
-func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*Generator, error) {
+// NewGenerator is a shortcut function that will try to guess and use good
+// default values for a new AssetGenerator, and then return the resulting
+// AssetGenerator.
+func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*AssetGenerator, error) {
 	if len(path) < 1 {
 		return nil, ErrNoPaths
 	}
@@ -58,8 +60,7 @@ func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*
 		}
 	}
 
-	// TODO: support multiple file paths/dirs
-	g := &Generator{
+	g := &AssetGenerator{
 		FilePaths:   path,
 		Package:     pkg,
 		OutputFile:  output,
@@ -69,9 +70,9 @@ func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*
 	return g, nil
 }
 
-// GenerateAssets attempts to read the provided asset files, compress them and
+// Generate attempts to read the provided asset files, compress them and
 // then embedd them in a new Go file, along with a basic test file.
-func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
+func (g *AssetGenerator) Generate() ([]*AssetFile, error) {
 	files := make(map[string][]byte)
 	for _, p := range g.FilePaths {
 		f, e := embedAssets(p, g.StripPath)

@@ -219,7 +219,6 @@ func testDir(t *testing.T, dir string, fileNames []string) {
 		return false
 	}
 
-	// TODO: handle multiple dirs
 	files, e := {{.assetFunc}}Dir(dir)
 	if e != nil {
 		t.Errorf("Unexpected error while reading: %s", e.Error())
