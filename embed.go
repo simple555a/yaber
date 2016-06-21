@@ -29,7 +29,7 @@ func NewGenerator(path []string, pkg, output, strip string) (*Generator, error) 
 	}
 
 	if len(output) < 1 {
-		output = "assets.go"
+		output = "assets"
 	}
 
 	if len(pkg) < 1 {
@@ -70,17 +70,36 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 		"files":   files,
 	}
 
-	// Generate the *dev.go file with no assets.
+	// Generate the main file with embedded files.
 	mainBody, e := runTemplate(tmplMain, data)
 	if e != nil {
 		return nil, e
 	}
 	main := &AssetFile{
-		Path: g.OutputFile,
+		Path: g.OutputFile + ".go",
 		Body: mainBody,
 	}
 
-	return []*AssetFile{main}, nil
+	// Generate the test file.
+	var first string
+	for k, _ := range files {
+		first = k
+		break
+	}
+	data["firstPath"] = first
+	data["firstBody"] = files[first]
+	data["dirs"] = g.FilePaths
+
+	testBody, e := runTemplate(tmplTest, data)
+	if e != nil {
+		return nil, e
+	}
+	test := &AssetFile{
+		Path: g.OutputFile + "_test.go",
+		Body: testBody,
+	}
+
+	return []*AssetFile{main, test}, nil
 }
 
 // Recursively reads all regular files in path, into memory as gzipped data.
