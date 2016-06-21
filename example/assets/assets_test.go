@@ -73,7 +73,6 @@ func testDir(t *testing.T, dir string, fileNames []string) {
 		return false
 	}
 
-	// TODO: handle multiple dirs
 	files, e := AssetDir(dir)
 	if e != nil {
 		t.Errorf("Unexpected error while reading: %s", e.Error())
@@ -83,7 +82,7 @@ func testDir(t *testing.T, dir string, fileNames []string) {
 		t.Errorf("Unexpected file amount, expected=%d, got=%d", len(fileNames), len(files))
 	}
 
-	for f, _ := range files {
+	for f := range files {
 		if !hasFile(f) {
 			t.Errorf("Missing file %s in directory", f)
 		}

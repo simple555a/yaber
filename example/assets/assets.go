@@ -15,12 +15,15 @@ import (
 	"strings"
 )
 
-var _useRawAssets bool = false
+var _useRawAssets = false
 
+// SetRawAssets toggles reading files from hard disk (b = true) or from the
+// embedded files (b = false).
 func SetRawAssets(b bool) {
 	_useRawAssets = b
 }
 
+// Asset returns the contents of a file as a []byte.
 func Asset(path string) ([]byte, error) {
 	if _useRawAssets {
 		return getRaw(path)
@@ -28,6 +31,8 @@ func Asset(path string) ([]byte, error) {
 	return getEmbedded(path)
 }
 
+// AssetDir returns a map where the keys are file paths and the values
+// are the file contents.
 func AssetDir(dir string) (map[string][]byte, error) {
 	if _useRawAssets {
 		return getRawDir(dir)
