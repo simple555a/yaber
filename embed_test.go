@@ -45,7 +45,7 @@ func TestGenerateAssets(t *testing.T) {
 	failOnError(t, e)
 
 	assert(t, gen.Package, "assets")
-	assert(t, gen.OutputFile, "./example/assets/assets")
+	assert(t, gen.OutputPrefix, "./example/assets/assets")
 
 	files, e := gen.Generate([]string{"./example"})
 	failOnError(t, e)

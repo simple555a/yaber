@@ -10,7 +10,7 @@ import (
 )
 
 // ErrNoPaths is returned from Generator.Generate() whenever the user has failed to
-// provide at least a single file path to assets to embedd..
+// provide at least a single file path to assets to embedd.
 var ErrNoPaths = errors.New("no file paths to assets")
 
 // AssetFile is the final, generated product from a AssetGenerator.
@@ -25,8 +25,8 @@ type AssetGenerator struct {
 	// Package sets the package name for the newly generated files.
 	Package string
 
-	// OutputFile is the path prefix to append to the generated files.
-	OutputFile string
+	// OutputPrefix is the path prefix to append to the generated files.
+	OutputPrefix string
 
 	// StripPath will strip this prefix from the embedded asset file paths.
 	StripPath string
@@ -53,10 +53,10 @@ func NewGenerator(pkg, output, strip string, publicFuncs bool) (*AssetGenerator,
 	}
 
 	g := &AssetGenerator{
-		Package:     pkg,
-		OutputFile:  output,
-		StripPath:   strip,
-		PublicFuncs: publicFuncs,
+		Package:      pkg,
+		OutputPrefix: output,
+		StripPath:    strip,
+		PublicFuncs:  publicFuncs,
 	}
 	return g, nil
 }
@@ -99,7 +99,7 @@ func (g *AssetGenerator) Generate(paths []string) ([]*AssetFile, error) {
 		return nil, e
 	}
 	main := &AssetFile{
-		Path: g.OutputFile + ".go",
+		Path: g.OutputPrefix + ".go",
 		Body: mainBody,
 	}
 
@@ -118,7 +118,7 @@ func (g *AssetGenerator) Generate(paths []string) ([]*AssetFile, error) {
 		return nil, e
 	}
 	test := &AssetFile{
-		Path: g.OutputFile + "_test.go",
+		Path: g.OutputPrefix + "_test.go",
 		Body: testBody,
 	}
 

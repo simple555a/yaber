@@ -12,7 +12,7 @@ import (
 
 var (
 	pkg    = flag.String("pkg", "", "package name to use for the generated code")
-	output = flag.String("out", "assets", "file name prefix for the generated files (must not end with .go)")
+	output = flag.String("out", "assets", "file path prefix for the generated files")
 	strip  = flag.String("strip", "", "file path prefix to strip away from the assets")
 	public = flag.Bool("public", false, "export public functions for getting assets")
 )
