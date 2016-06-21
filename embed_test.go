@@ -14,7 +14,7 @@ func assert(t *testing.T, val, expected interface{}) {
 }
 
 func TestEmbedAssets(t *testing.T) {
-	files, e := embedAssets("./example/templates", "example/")
+	files, e := embedAsset("./example/templates", "example/")
 	failOnError(t, e)
 	assert(t, len(files), 3)
 
@@ -41,15 +41,13 @@ func TestEmbedAssets(t *testing.T) {
 }
 
 func TestGenerateAssets(t *testing.T) {
-	gen, e := NewGenerator([]string{"./example"}, "", "./example/assets/assets", "", false)
+	gen, e := NewGenerator("", "./example/assets/assets", "", false)
 	failOnError(t, e)
 
-	assert(t, len(gen.FilePaths), 1)
-	assert(t, gen.FilePaths[0], "./example")
 	assert(t, gen.Package, "assets")
 	assert(t, gen.OutputFile, "./example/assets/assets")
 
-	files, e := gen.GenerateAssets()
+	files, e := gen.Generate([]string{"./example"})
 	failOnError(t, e)
 	assert(t, len(files), 2)
 	assert(t, files[0].Path, "./example/assets/assets.go")

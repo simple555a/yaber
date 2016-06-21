@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-// ErrNoPaths is returned from NewGenerator() whenever the user has failed to
-// provide at least a single file path to assets.
+// ErrNoPaths is returned from Generator.Generate() whenever the user has failed to
+// provide at least a single file path to assets to embedd..
 var ErrNoPaths = errors.New("no file paths to assets")
 
 // AssetFile is the final, generated product from a AssetGenerator.
@@ -22,9 +22,6 @@ type AssetFile struct {
 // AssetGenerator is the main object used for generating new files with embedded
 // assets and tests.
 type AssetGenerator struct {
-	// FilePaths is the list of asset directories/files to embed.
-	FilePaths []string
-
 	// Package sets the package name for the newly generated files.
 	Package string
 
@@ -40,17 +37,8 @@ type AssetGenerator struct {
 }
 
 // NewGenerator is a shortcut function that will try to guess and use good
-// default values for a new AssetGenerator, and then return the resulting
-// AssetGenerator.
-func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*AssetGenerator, error) {
-	if len(path) < 1 {
-		return nil, ErrNoPaths
-	}
-
-	if len(output) < 1 {
-		output = "assets"
-	}
-
+// default values for a new AssetGenerator.
+func NewGenerator(pkg, output, strip string, publicFuncs bool) (*AssetGenerator, error) {
 	if len(pkg) < 1 {
 		var e error
 		// Default to use the output (or the current) dir as the pkg name
@@ -60,8 +48,11 @@ func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*
 		}
 	}
 
+	if len(output) < 1 {
+		output = "assets"
+	}
+
 	g := &AssetGenerator{
-		FilePaths:   path,
 		Package:     pkg,
 		OutputFile:  output,
 		StripPath:   strip,
@@ -72,10 +63,14 @@ func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*
 
 // Generate attempts to read the provided asset files, compress them and
 // then embedd them in a new Go file, along with a basic test file.
-func (g *AssetGenerator) Generate() ([]*AssetFile, error) {
+func (g *AssetGenerator) Generate(paths []string) ([]*AssetFile, error) {
+	if len(paths) < 1 {
+		return nil, ErrNoPaths
+	}
+
 	files := make(map[string][]byte)
-	for _, p := range g.FilePaths {
-		f, e := embedAssets(p, g.StripPath)
+	for _, p := range paths {
+		f, e := embedAsset(p, g.StripPath)
 		if e != nil {
 			return nil, e
 		}
@@ -116,7 +111,7 @@ func (g *AssetGenerator) Generate() ([]*AssetFile, error) {
 	}
 	data["firstPath"] = first
 	data["firstBody"] = files[first]
-	data["dirs"] = g.FilePaths
+	data["dirs"] = paths
 
 	testBody, e := runTemplate(tmplTest, data)
 	if e != nil {
@@ -132,7 +127,7 @@ func (g *AssetGenerator) Generate() ([]*AssetFile, error) {
 
 // Recursively reads all regular files in path, into memory as gzipped data.
 // Returns a map where the keys are file paths and the values are the gzip byte data.
-func embedAssets(path string, stripPath string) (map[string][]byte, error) {
+func embedAsset(path string, stripPath string) (map[string][]byte, error) {
 	list := make(map[string][]byte)
 	dirs := []string{path}
 

@@ -24,10 +24,10 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	gen, e := yaber.NewGenerator(flag.Args(), *pkg, *output, *strip, *public)
+	gen, e := yaber.NewGenerator(*pkg, *output, *strip, *public)
 	checkError(e)
 
-	files, e := gen.GenerateAssets()
+	files, e := gen.Generate(flag.Args())
 	checkError(e)
 
 	for _, f := range files {
