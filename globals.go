@@ -1,3 +1,4 @@
 package yaber
 
-const VERSION = "0.3"
+// Current version of library
+const VERSION string = "0.3"

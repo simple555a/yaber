@@ -9,24 +9,40 @@ import (
 	"strings"
 )
 
-var ErrNoPath = errors.New("no file path to assets")
+// ErrNoPaths is returned from NewGenerator() whenever the user has failed to
+// provide at least a single file path to assets.
+var ErrNoPaths = errors.New("no file paths to assets")
 
+// AssetFile is the final, generated product from a Generator.
 type AssetFile struct {
 	Path string
 	Body []byte
 }
 
+// Generator is the main object used for generating new files with embedded
+// assets and tests.
 type Generator struct {
-	FilePaths   []string
-	Package     string
-	OutputFile  string
-	StripPath   string
+	// FilePaths is the list of asset directories/files to embed.
+	FilePaths []string
+
+	// Package sets the package name for the newly generated files.
+	Package string
+
+	// OutputFile is the path prefix to append to the generated files.
+	OutputFile string
+
+	// StripPath will strip this prefix from the embedded asset file paths.
+	StripPath string
+
+	// If true, PublicFuncs let's you publicly export some functions for
+	// accessing your embedded assets, from outside the package.
 	PublicFuncs bool
 }
 
+// NewGenerator constructs a new Generator object.
 func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*Generator, error) {
 	if len(path) < 1 {
-		return nil, ErrNoPath
+		return nil, ErrNoPaths
 	}
 
 	if len(output) < 1 {
@@ -53,6 +69,8 @@ func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*
 	return g, nil
 }
 
+// GenerateAssets attempts to read the provided asset files, compress them and
+// then embedd them in a new Go file, along with a basic test file.
 func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 	files := make(map[string][]byte)
 	for _, p := range g.FilePaths {
@@ -91,7 +109,7 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 
 	// Generate the test file.
 	var first string
-	for k, _ := range files {
+	for k := range files {
 		first = k
 		break
 	}

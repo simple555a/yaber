@@ -39,12 +39,15 @@ import (
         "strings"
 )
 
-var _useRawAssets bool = false
+var _useRawAssets = false
 
+// {{.setRawFunc}} toggles reading files from hard disk (b = true) or from the
+// embedded files (b = false).
 func {{.setRawFunc}}(b bool) {
         _useRawAssets = b
 }
 
+// {{.assetFunc}} returns the contents of a file as a []byte.
 func {{.assetFunc}}(path string) ([]byte, error) {
         if _useRawAssets {
                 return getRaw(path)
@@ -52,6 +55,8 @@ func {{.assetFunc}}(path string) ([]byte, error) {
         return getEmbedded(path)
 }
 
+// {{.assetFunc}}Dir returns a map where the keys are file paths and the values
+// are the file contents.
 func {{.assetFunc}}Dir(dir string) (map[string][]byte, error) {
         if _useRawAssets {
                 return getRawDir(dir)
@@ -224,7 +229,7 @@ func testDir(t *testing.T, dir string, fileNames []string) {
 		t.Errorf("Unexpected file amount, expected=%d, got=%d", len(fileNames), len(files))
 	}
 
-	for f, _ := range files {
+	for f := range files {
 		if !hasFile(f) {
 			t.Errorf("Missing file %s in directory", f)
 		}
