@@ -14,6 +14,7 @@ var (
 	pkg    = flag.String("pkg", "", "package name to use for the generated code")
 	output = flag.String("out", "assets", "file name prefix for the generated files (must not end with .go)")
 	strip  = flag.String("strip", "", "file path prefix to strip away from the assets")
+	public = flag.Bool("public", false, "export public functions for getting assets")
 )
 
 func main() {
@@ -23,7 +24,7 @@ func main() {
 	flag.Usage = usage
 	flag.Parse()
 
-	gen, e := yaber.NewGenerator(flag.Args(), *pkg, *output, *strip)
+	gen, e := yaber.NewGenerator(flag.Args(), *pkg, *output, *strip, *public)
 	checkError(e)
 
 	files, e := gen.GenerateAssets()

@@ -6,10 +6,12 @@ import (
 )
 
 var data = map[string]interface{}{
-	"version": "testver",
-	"package": "testpkg",
-	"command": "testcmd",
-	"tag":     "testtag",
+	"version":    "testver",
+	"package":    "testpkg",
+	"command":    "testcmd",
+	"tag":        "testtag",
+	"assetFunc":  "Asset",
+	"setRawFunc": "SetRawAssets",
 	"files": map[string][]byte{
 		"TESTFILE": []byte("TESTFILEBODY"),
 	},

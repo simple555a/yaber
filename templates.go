@@ -41,29 +41,29 @@ import (
 
 var _useRawAssets bool = false
 
-func SetRawAssets(b bool) {
+func {{.setRawFunc}}(b bool) {
         _useRawAssets = b
 }
 
-func Asset(path string) ([]byte, error) {
+func {{.assetFunc}}(path string) ([]byte, error) {
         if _useRawAssets {
-                return GetRaw(path)
+                return getRaw(path)
         }
-        return GetEmbedded(path)
+        return getEmbedded(path)
 }
 
-func AssetDir(dir string) (map[string][]byte, error) {
+func {{.assetFunc}}Dir(dir string) (map[string][]byte, error) {
         if _useRawAssets {
-                return GetRawDir(dir)
+                return getRawDir(dir)
         }
-        return GetEmbeddedDir(dir)
+        return getEmbeddedDir(dir)
 }
 
-func GetRaw(path string) ([]byte, error) {
+func getRaw(path string) ([]byte, error) {
         return ioutil.ReadFile(path)
 }
 
-func GetRawDir(dir string) (map[string][]byte, error) {
+func getRawDir(dir string) (map[string][]byte, error) {
         list := make(map[string][]byte)
         dirs := []string{dir}
 
@@ -96,7 +96,7 @@ func GetRawDir(dir string) (map[string][]byte, error) {
         return list, nil
 }
 
-func GetEmbedded(path string) ([]byte, error) {
+func getEmbedded(path string) ([]byte, error) {
         body, ok := _rawAssets[path]
         if !ok {
                 return nil, os.ErrNotExist
@@ -104,7 +104,7 @@ func GetEmbedded(path string) ([]byte, error) {
         return decompress(body)
 }
 
-func GetEmbeddedDir(dir string) (map[string][]byte, error) {
+func getEmbeddedDir(dir string) (map[string][]byte, error) {
         var e error
         files := make(map[string][]byte)
         for path, body := range _rawAssets {
@@ -174,7 +174,7 @@ func restoreDir() {
 }
 
 func testFile(t *testing.T, path string, body []byte) {
-	b, e := Asset(path)
+	b, e := {{.assetFunc}}(path)
 	if e != nil {
 		t.Errorf("Unexpected error when reading%s: %s", path, e.Error())
 	}
@@ -196,11 +196,11 @@ func TestSingleFile(t *testing.T) {
 		t.Errorf("Unexpected error when decompressing test file body: %s", e.Error())
 	}
 	// Compare against embedded file.
-	SetRawAssets(false)
+	{{.setRawFunc}}(false)
 	testFile(t, name, body)
 
 	// Compare against real file on disk.
-	SetRawAssets(true)
+	{{.setRawFunc}}(true)
 	testFile(t, name, body)
 }
 
@@ -215,7 +215,7 @@ func testDir(t *testing.T, dir string, fileNames []string) {
 	}
 
 	// TODO: handle multiple dirs
-	files, e := AssetDir(dir)
+	files, e := {{.assetFunc}}Dir(dir)
 	if e != nil {
 		t.Errorf("Unexpected error while reading: %s", e.Error())
 	}
@@ -248,12 +248,12 @@ func TestAllFiles(t *testing.T) {
 {{end}}
 	}
 
-	SetRawAssets(false)
+	{{.setRawFunc}}(false)
 	for _, d := range dirs {
 		testDir(t, d, names)
 	}
 
-	SetRawAssets(true)
+	{{.setRawFunc}}(true)
 	for _, d := range dirs {
 		testDir(t, d, names)
 	}

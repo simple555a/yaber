@@ -17,13 +17,14 @@ type AssetFile struct {
 }
 
 type Generator struct {
-	FilePaths  []string
-	Package    string
-	OutputFile string
-	StripPath  string
+	FilePaths   []string
+	Package     string
+	OutputFile  string
+	StripPath   string
+	PublicFuncs bool
 }
 
-func NewGenerator(path []string, pkg, output, strip string) (*Generator, error) {
+func NewGenerator(path []string, pkg, output, strip string, publicFuncs bool) (*Generator, error) {
 	if len(path) < 1 {
 		return nil, ErrNoPath
 	}
@@ -43,10 +44,11 @@ func NewGenerator(path []string, pkg, output, strip string) (*Generator, error) 
 
 	// TODO: support multiple file paths/dirs
 	g := &Generator{
-		FilePaths:  path,
-		Package:    pkg,
-		OutputFile: output,
-		StripPath:  strip,
+		FilePaths:   path,
+		Package:     pkg,
+		OutputFile:  output,
+		StripPath:   strip,
+		PublicFuncs: publicFuncs,
 	}
 	return g, nil
 }
@@ -68,6 +70,13 @@ func (g *Generator) GenerateAssets() ([]*AssetFile, error) {
 		"package": g.Package,
 		"command": executedCommand(),
 		"files":   files,
+	}
+	if g.PublicFuncs {
+		data["assetFunc"] = "Asset"
+		data["setRawFunc"] = "SetRawAssets"
+	} else {
+		data["assetFunc"] = "asset"
+		data["setRawFunc"] = "setRawAssets"
 	}
 
 	// Generate the main file with embedded files.

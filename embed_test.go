@@ -41,7 +41,7 @@ func TestEmbedAssets(t *testing.T) {
 }
 
 func TestGenerateAssets(t *testing.T) {
-	gen, e := NewGenerator([]string{"./example"}, "", "./example/assets/assets", "")
+	gen, e := NewGenerator([]string{"./example"}, "", "./example/assets/assets", "", false)
 	failOnError(t, e)
 
 	assert(t, len(gen.FilePaths), 1)
